@@ -2,7 +2,7 @@
   <div
     class="flex items-center px-3 py-3 list__item"
     :class="{
-      'line-through text-gray-700': member.totalTime,
+      'line-through text-gray-700': member.isCompleted,
       'bg-gray-900 text-gray-100': highlighted
     }"
   >
@@ -55,13 +55,13 @@ export default {
     ...mapState(['isDailyStarted', 'isDailyFinished']),
 
     showToggleMember() {
-      return !this.isDailyStarted
+      return !this.isDailyStarted && !this.isDailyFinished
     }
   },
 
   methods: {
     toggleMember() {
-      this.$store.commit('toggleMember', this.member)
+      this.$store.commit('toggleMemberAvailability', this.member)
     }
   }
 }

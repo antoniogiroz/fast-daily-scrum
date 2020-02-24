@@ -3,6 +3,7 @@ import { getAllMembers } from '@/services/members.service'
 
 export const state = () => ({
   members: [],
+  availableMembers: [],
   currentMemberIndex: 0,
   isDailyStarted: false,
   isDailyFinished: false,
@@ -11,34 +12,31 @@ export const state = () => ({
 })
 
 export const getters = {
-  availableMembers(state) {
-    return state.members.filter((member) => member.isAvailable)
-  },
-
   awayMembers(state) {
-    return state.members.filter((member) => !member.isAvailable)
+    return state.members.filter(({ isAvailable }) => !isAvailable)
   },
 
-  currentMember(state, getters) {
-    return getters.availableMembers[state.currentMemberIndex]
+  currentMember(state) {
+    return state.availableMembers[state.currentMemberIndex]
   },
 
-  previousMember(state, getters) {
-    return getters.availableMembers[state.currentMemberIndex - 1]
+  previousMember(state) {
+    return state.availableMembers[state.currentMemberIndex - 1]
   },
 
-  nextMember(state, getters) {
-    return getters.availableMembers[state.currentMemberIndex + 1]
+  nextMember(state) {
+    return state.availableMembers[state.currentMemberIndex + 1]
   }
 }
 
 export const mutations = {
   initDaily(state) {
     state.members.forEach((member) => {
-      member.totalTime = null
+      member.totalTime = 0
+      member.isCompleted = false
     })
     state.currentMemberIndex = 0
-    state.members = shuffle(state.members)
+    state.availableMembers = shuffle(state.availableMembers)
     state.isDailyStarted = true
     state.isDailyFinished = false
     state.totalDailyTime = 0
@@ -48,11 +46,20 @@ export const mutations = {
     state.members = members
   },
 
-  toggleMember(state, member) {
+  updateAvailableMembers(state) {
+    state.availableMembers = state.members.filter(
+      ({ isAvailable }) => isAvailable
+    )
+  },
+
+  toggleMemberAvailability(state, member) {
     const foundMember = state.members.find((m) => m.email === member.email)
     if (foundMember) {
       foundMember.isAvailable = !foundMember.isAvailable
     }
+    state.availableMembers = state.members.filter(
+      ({ isAvailable }) => isAvailable
+    )
   },
 
   setDailyStarted(state, isStarted) {
@@ -63,11 +70,14 @@ export const mutations = {
     state.isDailyFinished = isFinished
   },
 
-  updateMemberTime(state, { currentMember, currentTotalTime }) {
-    const currentMemberIndexInCompleteList = state.members.findIndex(
-      (member) => member.email === currentMember.email
-    )
-    state.members[currentMemberIndexInCompleteList].totalTime = currentTotalTime
+  updateCurrentMemberTime(state, currentTotalTime) {
+    state.availableMembers[
+      state.currentMemberIndex
+    ].totalTime = currentTotalTime
+  },
+
+  setCurrentMemberAsCompleted(state) {
+    state.availableMembers[state.currentMemberIndex].isCompleted = true
   },
 
   selectNextMember(state) {
@@ -84,33 +94,24 @@ export const actions = {
     let members = await getAllMembers()
     members = sortBy(members, 'name')
     commit('setMember', members)
+    commit('updateAvailableMembers')
   },
 
   startDaily({ commit, state }) {
-    if (!state.isDailyStarted) {
-      commit('initDaily')
-    }
+    commit('initDaily')
   },
 
-  nextMember({ commit, getters }, currentTotalTime) {
-    commit('updateMemberTime', {
-      currentMember: getters.currentMember,
-      currentTotalTime
-    })
-
+  nextMember({ commit }) {
+    commit('setCurrentMemberAsCompleted')
     commit('selectNextMember')
   },
 
-  finishDaily({ commit, getters }, currentTotalTime) {
-    commit('updateMemberTime', {
-      currentMember: getters.currentMember,
-      currentTotalTime
-    })
-
-    const totalDailyTime = getters.availableMembers.reduce(
+  finishDaily({ commit, state }) {
+    const totalDailyTime = state.availableMembers.reduce(
       (dailyTotalTime, member) => dailyTotalTime + member.totalTime,
       0
     )
+    commit('setCurrentMemberAsCompleted')
     commit('setDailyStarted', false)
     commit('setDailyFinished', true)
     commit('setTotalDailyTime', totalDailyTime)

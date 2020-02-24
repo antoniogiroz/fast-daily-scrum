@@ -14,17 +14,18 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
+import { mapState } from 'vuex'
 import MemberList from '@/components/members/MemberList.vue'
 
 export default {
+  middleware: 'daily-finished',
+
   components: {
     MemberList
   },
 
   computed: {
-    ...mapState(['totalDailyTime']),
-    ...mapGetters(['availableMembers'])
+    ...mapState(['availableMembers', 'totalDailyTime'])
   }
 }
 </script>

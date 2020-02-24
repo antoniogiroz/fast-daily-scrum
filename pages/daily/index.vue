@@ -1,6 +1,8 @@
 <template>
   <div>
-    <Counter />
+    <keep-alive>
+      <Counter />
+    </keep-alive>
 
     <section class="mt-16">
       <Member
@@ -24,6 +26,8 @@ import Counter from '@/components/Counter.vue'
 import Member from '@/components/members/Member.vue'
 
 export default {
+  middleware: 'daily-started',
+
   components: {
     Counter,
     Member

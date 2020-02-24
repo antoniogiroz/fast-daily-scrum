@@ -53,7 +53,7 @@ export default {
 
   computed: {
     ...mapState(['initialCounterSeconds']),
-    ...mapGetters(['nextMember']),
+    ...mapGetters(['currentMember', 'nextMember']),
 
     counterClasses() {
       if (this.totalTime < 0 || this.exceeded) {
@@ -70,7 +70,18 @@ export default {
   },
 
   created() {
-    this.totalTime = this.initialCounterSeconds
+    const currentMemberTime = this.currentMember.totalTime
+
+    if (currentMemberTime > this.initialCounterSeconds) {
+      this.exceeded = true
+      this.totalTime = currentMemberTime - this.initialCounterSeconds
+    } else {
+      this.totalTime = this.initialCounterSeconds - currentMemberTime
+    }
+  },
+
+  beforeDestroy() {
+    this.pauseTimer()
   },
 
   methods: {
@@ -100,7 +111,8 @@ export default {
       if (currentTotalTime === 0) {
         return
       }
-      this.$store.dispatch('nextMember', currentTotalTime)
+      this.updateMemberTime()
+      this.$store.dispatch('nextMember')
       this.resetTimer()
       this.startTimer()
     },
@@ -110,7 +122,8 @@ export default {
       if (currentTotalTime === 0) {
         return
       }
-      this.$store.dispatch('finishDaily', currentTotalTime)
+      this.updateMemberTime()
+      this.$store.dispatch('finishDaily')
       this.resetTimer()
       this.$router.push({
         path: '/daily/summary'
@@ -134,6 +147,14 @@ export default {
         this.exceeded = true
         this.totalTime++
       }
+      this.updateMemberTime()
+    },
+
+    updateMemberTime() {
+      this.$store.commit(
+        'updateCurrentMemberTime',
+        this.getCurrentMemberTotalTime()
+      )
     }
   }
 }

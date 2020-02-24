@@ -6,7 +6,7 @@
 
     <section>
       <h2 class="title">Available members</h2>
-      <MemberList :members="availableMembers" />
+      <MemberList :members="sortedAvailableMembers" />
     </section>
 
     <section v-if="awayMembers.length > 0">
@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import { sortBy } from 'lodash'
 import { mapState, mapGetters } from 'vuex'
 import MemberList from '@/components/members/MemberList.vue'
 
@@ -26,8 +27,13 @@ export default {
   },
 
   computed: {
-    ...mapState(['members', 'isDailyStarted', 'isDailyFinished']),
-    ...mapGetters(['availableMembers', 'awayMembers']),
+    ...mapState([
+      'members',
+      'availableMembers',
+      'isDailyStarted',
+      'isDailyFinished'
+    ]),
+    ...mapGetters(['awayMembers']),
 
     buttonText() {
       let buttonText = 'Start daily'
@@ -37,6 +43,10 @@ export default {
         buttonText = 'Start daily again?'
       }
       return buttonText
+    },
+
+    sortedAvailableMembers() {
+      return sortBy(this.availableMembers, 'name')
     }
   },
 
