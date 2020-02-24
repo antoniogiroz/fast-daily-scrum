@@ -30,14 +30,21 @@ export default {
     ...mapGetters(['availableMembers', 'awayMembers']),
 
     buttonText() {
-      return this.isDailyStarted && !this.isDailyFinished
-        ? 'Continue'
-        : 'Start Daily'
+      let buttonText = 'Start daily'
+      if (this.isDailyStarted) {
+        buttonText = 'Continue'
+      } else if (this.isDailyFinished) {
+        buttonText = 'Start daily again?'
+      }
+      return buttonText
     }
   },
 
   methods: {
     startDaily() {
+      if (!this.isDailyStarted || this.isDailyFinished) {
+        this.$store.dispatch('startDaily')
+      }
       this.$router.push({
         path: '/daily'
       })

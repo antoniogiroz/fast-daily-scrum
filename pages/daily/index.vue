@@ -32,10 +32,6 @@ export default {
   computed: {
     ...mapState(['isDailyStarted']),
     ...mapGetters(['previousMember', 'currentMember', 'nextMember'])
-  },
-
-  created() {
-    this.$store.dispatch('startDaily')
   }
 }
 </script>

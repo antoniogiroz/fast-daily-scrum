@@ -33,6 +33,17 @@ export const getters = {
 }
 
 export const mutations = {
+  initDaily(state) {
+    state.members.forEach((member) => {
+      member.totalTime = null
+    })
+    state.currentMemberIndex = 0
+    state.members = shuffle(state.members)
+    state.isDailyStarted = true
+    state.isDailyFinished = false
+    state.totalDailyTime = 0
+  },
+
   setMember(state, members) {
     state.members = members
   },
@@ -44,10 +55,6 @@ export const mutations = {
     }
   },
 
-  shuffleMembers(state) {
-    state.members = shuffle(state.members)
-  },
-
   setDailyStarted(state, isStarted) {
     state.isDailyStarted = isStarted
   },
@@ -56,11 +63,14 @@ export const mutations = {
     state.isDailyFinished = isFinished
   },
 
-  selectNextMember(state, { currentMember, currentTotalTime }) {
+  updateMemberTime(state, { currentMember, currentTotalTime }) {
     const currentMemberIndexInCompleteList = state.members.findIndex(
       (member) => member.email === currentMember.email
     )
     state.members[currentMemberIndexInCompleteList].totalTime = currentTotalTime
+  },
+
+  selectNextMember(state) {
     state.currentMemberIndex++
   },
 
@@ -78,27 +88,30 @@ export const actions = {
 
   startDaily({ commit, state }) {
     if (!state.isDailyStarted) {
-      commit('setDailyStarted', true)
-      commit('shuffleMembers')
+      commit('initDaily')
     }
   },
 
-  nextMember({ commit, getters, dispatch }, currentTotalTime) {
-    commit('selectNextMember', {
+  nextMember({ commit, getters }, currentTotalTime) {
+    commit('updateMemberTime', {
       currentMember: getters.currentMember,
       currentTotalTime
     })
 
-    if (!getters.nextMember) {
-      dispatch('finishDaily')
-    }
+    commit('selectNextMember')
   },
 
-  finishDaily({ commit, getters }) {
+  finishDaily({ commit, getters }, currentTotalTime) {
+    commit('updateMemberTime', {
+      currentMember: getters.currentMember,
+      currentTotalTime
+    })
+
     const totalDailyTime = getters.availableMembers.reduce(
       (dailyTotalTime, member) => dailyTotalTime + member.totalTime,
       0
     )
+    commit('setDailyStarted', false)
     commit('setDailyFinished', true)
     commit('setTotalDailyTime', totalDailyTime)
   }

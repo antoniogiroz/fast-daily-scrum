@@ -21,19 +21,19 @@
       >
         <IconPlay class="ml-1" />
       </button>
-      <button v-if="timer" class="mx-4 button icon primary" @click="stopTimer">
+      <button v-if="timer" class="mx-4 button icon primary" @click="pauseTimer">
         <IconPause />
       </button>
       <button v-if="nextMember" class="mx-4 button icon" @click="next">
         <IconNext />
       </button>
-      <nuxt-link
+      <button
         v-else
-        to="daily/summary"
         class="mx-4 text-xl font-semibold tracking-wider uppercase hover:text-gray-400"
+        @click="finish"
       >
         Finish
-      </nuxt-link>
+      </button>
     </div>
   </div>
 </template>
@@ -83,7 +83,7 @@ export default {
       this.resetButton = false
     },
 
-    stopTimer() {
+    pauseTimer() {
       clearInterval(this.timer)
       this.timer = null
       this.resetButton = true
@@ -92,25 +92,35 @@ export default {
     resetTimer() {
       this.exceeded = false
       this.totalTime = this.initialCounterSeconds
-      clearInterval(this.timer)
-      this.timer = null
-      this.resetButton = true
+      this.pauseTimer()
     },
 
     next() {
-      const currentTotalTime = this.exceeded
-        ? +this.initialCounterSeconds + this.totalTime
-        : this.initialCounterSeconds - this.totalTime
+      const currentTotalTime = this.getCurrentMemberTotalTime()
+      if (currentTotalTime === 0) {
+        return
+      }
       this.$store.dispatch('nextMember', currentTotalTime)
       this.resetTimer()
+      this.startTimer()
+    },
 
-      if (!this.nextMember) {
-        this.$router.push({
-          path: '/daily/summary'
-        })
-      } else {
-        this.startTimer()
+    finish() {
+      const currentTotalTime = this.getCurrentMemberTotalTime()
+      if (currentTotalTime === 0) {
+        return
       }
+      this.$store.dispatch('finishDaily', currentTotalTime)
+      this.resetTimer()
+      this.$router.push({
+        path: '/daily/summary'
+      })
+    },
+
+    getCurrentMemberTotalTime() {
+      return this.exceeded
+        ? +this.initialCounterSeconds + this.totalTime
+        : this.initialCounterSeconds - this.totalTime
     },
 
     padTime(time) {
