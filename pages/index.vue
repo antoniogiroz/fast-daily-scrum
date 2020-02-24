@@ -1,73 +1,64 @@
 <template>
-  <div class="container">
-    <div>
-      <logo />
-      <h1 class="title">
-        fast-daily-scrum
-      </h1>
-      <h2 class="subtitle">
-        App to moderate the turns and time in daily scrum meetings
-      </h2>
-      <div class="links">
-        <a href="https://nuxtjs.org/" target="_blank" class="button--green">
-          Documentation
-        </a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey"
-        >
-          GitHub
-        </a>
-      </div>
-    </div>
+  <div class="flex flex-col items-center justify-center">
+    <AppButton class="my-8" @click.native="startDaily">
+      {{ buttonText }}
+    </AppButton>
+
+    <section>
+      <h2 class="title">Available members</h2>
+      <MemberList :members="sortedAvailableMembers" />
+    </section>
+
+    <section v-if="awayMembers.length > 0">
+      <h2 class="title">Away members</h2>
+      <MemberList :members="awayMembers" />
+    </section>
   </div>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
+import { sortBy } from 'lodash'
+import { mapState, mapGetters } from 'vuex'
+import MemberList from '@/components/members/MemberList.vue'
 
 export default {
   components: {
-    Logo
+    MemberList
+  },
+
+  computed: {
+    ...mapState([
+      'members',
+      'availableMembers',
+      'isDailyStarted',
+      'isDailyFinished'
+    ]),
+    ...mapGetters(['awayMembers']),
+
+    buttonText() {
+      let buttonText = 'Start daily'
+      if (this.isDailyStarted) {
+        buttonText = 'Continue'
+      } else if (this.isDailyFinished) {
+        buttonText = 'Start daily again?'
+      }
+      return buttonText
+    },
+
+    sortedAvailableMembers() {
+      return sortBy(this.availableMembers, 'name')
+    }
+  },
+
+  methods: {
+    startDaily() {
+      if (!this.isDailyStarted || this.isDailyFinished) {
+        this.$store.dispatch('startDaily')
+      }
+      this.$router.push({
+        path: '/daily'
+      })
+    }
   }
 }
 </script>
-
-<style>
-/* Sample `apply` at-rules with Tailwind CSS
-.container {
-  @apply min-h-screen flex justify-center items-center text-center mx-auto;
-}
-*/
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
-}
-</style>

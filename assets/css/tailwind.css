@@ -3,3 +3,50 @@
 @import 'tailwindcss/components';
 /* purgecss end ignore */
 @import 'tailwindcss/utilities';
+
+@import './components/_button';
+
+body {
+  @apply antialiased text-gray-500 bg-gray-800;
+}
+
+:focus {
+  outline: none !important;
+}
+
+section {
+  @apply w-full;
+}
+
+.title {
+  @apply pb-2 mt-16 text-lg font-medium text-center text-gray-600 uppercase border-b border-gray-600;
+}
+
+.blink {
+  animation: blinker 1s linear infinite;
+}
+
+.exceeded::before {
+  content: '-';
+  position: absolute;
+  left: -5rem;
+}
+
+.list .list__item--completed {
+  text-decoration: line-through;
+  @apply text-gray-700;
+}
+
+/* .list__action {
+  display: none;
+}
+
+.list__item:hover .list__action {
+  display: block;
+} */
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
