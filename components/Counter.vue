@@ -103,6 +103,7 @@ export default {
     resetTimer() {
       this.exceeded = false
       this.totalTime = this.initialCounterSeconds
+      this.updateMemberTime()
       this.pauseTimer()
     },
 
