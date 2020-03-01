@@ -2,7 +2,6 @@
   <div
     class="flex items-center px-3 py-3 list__item"
     :class="{
-      'line-through text-gray-700': member.isCompleted,
       'bg-gray-900 text-gray-100': highlighted
     }"
   >
