@@ -12,7 +12,9 @@
       {{ member.name }}
     </div>
 
-    <div class="ml-4 text-lg">{{ member.totalTime | time }}</div>
+    <div v-if="member.totalTime > 0" class="ml-4 text-lg">
+      {{ member.totalTime | time }}
+    </div>
 
     <button
       v-if="showToggleMember"
