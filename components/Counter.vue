@@ -47,7 +47,7 @@ export default {
       timer: null,
       totalTime: null,
       resetButton: false,
-      exceeded: false
+      exceeded: false,
     }
   },
 
@@ -66,7 +66,7 @@ export default {
         return 'text-orange-400'
       }
       return 'text-teal-400'
-    }
+    },
   },
 
   created() {
@@ -127,7 +127,7 @@ export default {
       this.$store.dispatch('finishDaily')
       this.resetTimer()
       this.$router.push({
-        path: '/daily/summary'
+        path: '/daily/summary',
       })
     },
 
@@ -156,7 +156,7 @@ export default {
         'updateCurrentMemberTime',
         this.getCurrentMemberTotalTime()
       )
-    }
-  }
+    },
+  },
 }
 </script>

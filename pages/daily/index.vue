@@ -26,16 +26,16 @@ import Counter from '@/components/Counter.vue'
 import Member from '@/components/members/Member.vue'
 
 export default {
-  middleware: 'daily-started',
-
   components: {
     Counter,
-    Member
+    Member,
   },
+
+  middleware: 'daily-started',
 
   computed: {
     ...mapState(['isDailyStarted']),
-    ...mapGetters(['previousMember', 'currentMember', 'nextMember'])
-  }
+    ...mapGetters(['previousMember', 'currentMember', 'nextMember']),
+  },
 }
 </script>

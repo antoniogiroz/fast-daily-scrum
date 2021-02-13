@@ -22,7 +22,7 @@ const components = {
   IconReset,
   IconShuffle,
   IconTimer,
-  IconTrash
+  IconTrash,
 }
 
 Object.entries(components).forEach(([name, component]) => {

@@ -23,7 +23,7 @@ import MemberList from '@/components/members/MemberList.vue'
 
 export default {
   components: {
-    MemberList
+    MemberList,
   },
 
   computed: {
@@ -31,7 +31,7 @@ export default {
       'members',
       'availableMembers',
       'isDailyStarted',
-      'isDailyFinished'
+      'isDailyFinished',
     ]),
     ...mapGetters(['awayMembers']),
 
@@ -47,7 +47,7 @@ export default {
 
     sortedAvailableMembers() {
       return sortBy(this.availableMembers, 'name')
-    }
+    },
   },
 
   methods: {
@@ -56,9 +56,9 @@ export default {
         this.$store.dispatch('startDaily')
       }
       this.$router.push({
-        path: '/daily'
+        path: '/daily',
       })
-    }
-  }
+    },
+  },
 }
 </script>

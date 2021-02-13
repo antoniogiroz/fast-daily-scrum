@@ -1,6 +1,6 @@
 import Vue from 'vue'
 
-Vue.filter('time', function(value = '') {
+Vue.filter('time', function (value = '') {
   if (value === '') {
     return ''
   }
