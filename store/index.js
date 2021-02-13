@@ -1,4 +1,5 @@
-import { sortBy, shuffle } from 'lodash'
+import sortBy from 'lodash/sortBy'
+import shuffle from 'lodash/shuffle'
 import { getAllMembers } from '@/services/members.service'
 
 export const state = () => ({
@@ -8,7 +9,7 @@ export const state = () => ({
   isDailyStarted: false,
   isDailyFinished: false,
   initialCounterSeconds: 120,
-  totalDailyTime: 0
+  totalDailyTime: 0,
 })
 
 export const getters = {
@@ -26,7 +27,7 @@ export const getters = {
 
   nextMember(state) {
     return state.availableMembers[state.currentMemberIndex + 1]
-  }
+  },
 }
 
 export const mutations = {
@@ -86,7 +87,7 @@ export const mutations = {
 
   setTotalDailyTime(state, totalDailyTime) {
     state.totalDailyTime = totalDailyTime
-  }
+  },
 }
 
 export const actions = {
@@ -115,5 +116,5 @@ export const actions = {
     commit('setDailyStarted', false)
     commit('setDailyFinished', true)
     commit('setTotalDailyTime', totalDailyTime)
-  }
+  },
 }

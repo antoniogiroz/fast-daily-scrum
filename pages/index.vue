@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { sortBy } from 'lodash'
+import sortBy from 'lodash/sortBy'
 import { mapState, mapGetters } from 'vuex'
 import MemberList from '@/components/members/MemberList.vue'
 
