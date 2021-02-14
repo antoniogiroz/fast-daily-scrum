@@ -33,3 +33,7 @@
 .button:hover.primary {
   @apply bg-teal-300;
 }
+
+.button:disabled.primary {
+  @apply bg-gray-700 text-gray-800;
+}

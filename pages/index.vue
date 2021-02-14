@@ -1,8 +1,23 @@
 <template>
   <div class="flex flex-col items-center justify-center">
-    <AppButton class="my-8" @click.native="startDaily">
+    <AppButton
+      class="my-8 primary"
+      :disabled="!canStartDaily"
+      @click.native="startDaily"
+    >
       {{ buttonText }}
     </AppButton>
+
+    <section class="flex justify-evenly">
+      <AppButton
+        v-for="team in teams"
+        :key="team.id"
+        class="my-8"
+        @click.native="setAvailableMembers(team.members)"
+      >
+        Team {{ team.name }} ({{ team.members.length }})
+      </AppButton>
+    </section>
 
     <section>
       <h2 class="title">Available members</h2>
@@ -18,7 +33,7 @@
 
 <script>
 import sortBy from 'lodash/sortBy'
-import { mapState, mapGetters } from 'vuex'
+import { mapState, mapGetters, mapMutations } from 'vuex'
 import MemberList from '@/components/members/MemberList.vue'
 
 export default {
@@ -28,6 +43,7 @@ export default {
 
   computed: {
     ...mapState([
+      'teams',
       'members',
       'availableMembers',
       'isDailyStarted',
@@ -45,12 +61,18 @@ export default {
       return buttonText
     },
 
+    canStartDaily() {
+      return this.availableMembers && this.availableMembers.length > 0
+    },
+
     sortedAvailableMembers() {
       return sortBy(this.availableMembers, 'name')
     },
   },
 
   methods: {
+    ...mapMutations(['setAvailableMembers']),
+
     startDaily() {
       if (!this.isDailyStarted || this.isDailyFinished) {
         this.$store.dispatch('startDaily')
