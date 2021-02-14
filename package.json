@@ -1,6 +1,6 @@
 {
   "name": "fast-daily-scrum",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "App to moderate the turns and time in daily scrum meetings",
   "author": "Antonio Gil",
   "private": true,
