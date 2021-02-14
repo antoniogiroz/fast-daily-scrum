@@ -5,7 +5,6 @@ import { getTeams, getAllMembers } from '@/services/members.service'
 export const state = () => ({
   teams: [],
   members: [],
-  availableMembers: [],
   currentMemberIndex: 0,
   isDailyStarted: false,
   isDailyFinished: false,
@@ -14,20 +13,24 @@ export const state = () => ({
 })
 
 export const getters = {
+  availableMembers(state) {
+    return state.members.filter(({ isAvailable }) => isAvailable)
+  },
+
   awayMembers(state) {
     return state.members.filter(({ isAvailable }) => !isAvailable)
   },
 
-  currentMember(state) {
-    return state.availableMembers[state.currentMemberIndex]
+  currentMember(state, getters) {
+    return getters.availableMembers[state.currentMemberIndex]
   },
 
-  previousMember(state) {
-    return state.availableMembers[state.currentMemberIndex - 1]
+  previousMember(state, getters) {
+    return getters.availableMembers[state.currentMemberIndex - 1]
   },
 
-  nextMember(state) {
-    return state.availableMembers[state.currentMemberIndex + 1]
+  nextMember(state, getters) {
+    return getters.availableMembers[state.currentMemberIndex + 1]
   },
 }
 
@@ -59,20 +62,16 @@ export const mutations = {
   },
 
   setAvailableMembers(state, members) {
-    members.forEach((member) => {
-      member.isAvailable = true
+    state.members.forEach((member) => {
+      member.isAvailable = members.find((m) => m.id === member.id)
     })
-    state.availableMembers = members
   },
 
   toggleMemberAvailability(state, member) {
-    const foundMember = state.members.find((m) => m.email === member.email)
+    const foundMember = state.members.find((m) => m.id === member.id)
     if (foundMember) {
       foundMember.isAvailable = !foundMember.isAvailable
     }
-    state.availableMembers = state.members.filter(
-      ({ isAvailable }) => isAvailable
-    )
   },
 
   setDailyStarted(state, isStarted) {

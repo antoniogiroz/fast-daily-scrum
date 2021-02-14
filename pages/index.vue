@@ -42,14 +42,8 @@ export default {
   },
 
   computed: {
-    ...mapState([
-      'teams',
-      'members',
-      'availableMembers',
-      'isDailyStarted',
-      'isDailyFinished',
-    ]),
-    ...mapGetters(['awayMembers']),
+    ...mapState(['teams', 'members', 'isDailyStarted', 'isDailyFinished']),
+    ...mapGetters(['availableMembers', 'awayMembers']),
 
     buttonText() {
       let buttonText = 'Start daily'
