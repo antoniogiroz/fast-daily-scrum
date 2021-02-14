@@ -2,8 +2,7 @@
   <div
     class="flex items-center px-3 py-3 list__item"
     :class="{
-      'line-through text-gray-700': member.isCompleted,
-      'bg-gray-900 text-gray-100': highlighted
+      'bg-gray-900 text-gray-100': highlighted,
     }"
   >
     <MemberAvatar :avatar="member.avatar" />
@@ -12,7 +11,9 @@
       {{ member.name }}
     </div>
 
-    <div class="ml-4 text-lg">{{ member.totalTime | time }}</div>
+    <div v-if="member.totalTime > 0" class="ml-4 text-lg">
+      {{ member.totalTime | time }}
+    </div>
 
     <button
       v-if="showToggleMember"
@@ -37,18 +38,18 @@ import MemberAvatar from './MemberAvatar.vue'
 
 export default {
   components: {
-    MemberAvatar
+    MemberAvatar,
   },
 
   props: {
     member: {
       type: Object,
-      required: true
+      required: true,
     },
     highlighted: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
 
   computed: {
@@ -56,13 +57,13 @@ export default {
 
     showToggleMember() {
       return !this.isDailyStarted && !this.isDailyFinished
-    }
+    },
   },
 
   methods: {
     toggleMember() {
       this.$store.commit('toggleMemberAvailability', this.member)
-    }
-  }
+    },
+  },
 }
 </script>

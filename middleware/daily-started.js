@@ -1,4 +1,4 @@
-export default function({ store, route, redirect }) {
+export default function dailyStarted({ store, redirect }) {
   if (!store.state.isDailyStarted) {
     return redirect('/')
   }

@@ -1,14 +1,16 @@
-import { sortBy, shuffle } from 'lodash'
-import { getAllMembers } from '@/services/members.service'
+import sortBy from 'lodash/sortBy'
+import shuffle from 'lodash/shuffle'
+import { getTeams, getAllMembers } from '@/services/members.service'
 
 export const state = () => ({
+  teams: [],
   members: [],
   availableMembers: [],
   currentMemberIndex: 0,
   isDailyStarted: false,
   isDailyFinished: false,
   initialCounterSeconds: 120,
-  totalDailyTime: 0
+  totalDailyTime: 0,
 })
 
 export const getters = {
@@ -26,7 +28,7 @@ export const getters = {
 
   nextMember(state) {
     return state.availableMembers[state.currentMemberIndex + 1]
-  }
+  },
 }
 
 export const mutations = {
@@ -42,7 +44,11 @@ export const mutations = {
     state.totalDailyTime = 0
   },
 
-  setMember(state, members) {
+  setTeams(state, teams) {
+    state.teams = teams
+  },
+
+  setMembers(state, members) {
     state.members = members
   },
 
@@ -50,6 +56,13 @@ export const mutations = {
     state.availableMembers = state.members.filter(
       ({ isAvailable }) => isAvailable
     )
+  },
+
+  setAvailableMembers(state, members) {
+    members.forEach((member) => {
+      member.isAvailable = true
+    })
+    state.availableMembers = members
   },
 
   toggleMemberAvailability(state, member) {
@@ -86,14 +99,22 @@ export const mutations = {
 
   setTotalDailyTime(state, totalDailyTime) {
     state.totalDailyTime = totalDailyTime
-  }
+  },
 }
 
 export const actions = {
   async nuxtServerInit({ commit }) {
+    const teams = await getTeams()
     let members = await getAllMembers()
+
+    teams.forEach((team) => {
+      team.members = members.filter((member) => member.team === team.id)
+    })
+
     members = sortBy(members, 'name')
-    commit('setMember', members)
+
+    commit('setTeams', teams)
+    commit('setMembers', members)
     commit('updateAvailableMembers')
   },
 
@@ -115,5 +136,5 @@ export const actions = {
     commit('setDailyStarted', false)
     commit('setDailyFinished', true)
     commit('setTotalDailyTime', totalDailyTime)
-  }
+  },
 }

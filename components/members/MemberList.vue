@@ -9,14 +9,14 @@ import Member from '@/components/members/Member.vue'
 
 export default {
   components: {
-    Member
+    Member,
   },
 
   props: {
     members: {
       type: Array,
-      required: true
-    }
-  }
+      required: true,
+    },
+  },
 }
 </script>
