@@ -5,7 +5,8 @@ import { getTeams, getAllMembers } from '@/services/members.service'
 export const state = () => ({
   teams: [],
   members: [],
-  currentMemberIndex: 0,
+  membersInDaily: [],
+  currentMember: null,
   isDailyStarted: false,
   isDailyFinished: false,
   initialCounterSeconds: 120,
@@ -21,32 +22,22 @@ export const getters = {
     return state.members.filter(({ isAvailable }) => !isAvailable)
   },
 
-  currentMember(state, getters) {
-    return getters.availableMembers[state.currentMemberIndex]
+  currentMemberIndex(state) {
+    return state.membersInDaily.findIndex(
+      (member) => member.id === state.currentMember.id
+    )
   },
 
   previousMember(state, getters) {
-    return getters.availableMembers[state.currentMemberIndex - 1]
+    return state.membersInDaily[getters.currentMemberIndex - 1]
   },
 
   nextMember(state, getters) {
-    return getters.availableMembers[state.currentMemberIndex + 1]
+    return state.membersInDaily[getters.currentMemberIndex + 1]
   },
 }
 
 export const mutations = {
-  initDaily(state) {
-    state.members.forEach((member) => {
-      member.totalTime = 0
-      member.isCompleted = false
-    })
-    state.currentMemberIndex = 0
-    state.availableMembers = shuffle(state.availableMembers)
-    state.isDailyStarted = true
-    state.isDailyFinished = false
-    state.totalDailyTime = 0
-  },
-
   setTeams(state, teams) {
     state.teams = teams
   },
@@ -55,16 +46,14 @@ export const mutations = {
     state.members = members
   },
 
-  updateAvailableMembers(state) {
-    state.availableMembers = state.members.filter(
-      ({ isAvailable }) => isAvailable
-    )
+  setAvailableMembers(state, newMembers) {
+    state.members.forEach((member) => {
+      member.isAvailable = !!newMembers.find((m) => m.id === member.id)
+    })
   },
 
-  setAvailableMembers(state, members) {
-    state.members.forEach((member) => {
-      member.isAvailable = members.find((m) => m.id === member.id)
-    })
+  setMembersInDaily(state, members) {
+    state.membersInDaily = members
   },
 
   toggleMemberAvailability(state, member) {
@@ -83,17 +72,15 @@ export const mutations = {
   },
 
   updateCurrentMemberTime(state, currentTotalTime) {
-    state.availableMembers[
-      state.currentMemberIndex
-    ].totalTime = currentTotalTime
+    state.currentMember.totalTime = currentTotalTime
   },
 
   setCurrentMemberAsCompleted(state) {
-    state.availableMembers[state.currentMemberIndex].isCompleted = true
+    state.currentMember.isCompleted = true
   },
 
-  selectNextMember(state) {
-    state.currentMemberIndex++
+  setCurrentMember(state, member) {
+    state.currentMember = member
   },
 
   setTotalDailyTime(state, totalDailyTime) {
@@ -114,20 +101,28 @@ export const actions = {
 
     commit('setTeams', teams)
     commit('setMembers', members)
-    commit('updateAvailableMembers')
   },
 
-  startDaily({ commit, state }) {
-    commit('initDaily')
+  startDaily({ commit, getters }) {
+    const membersInDaily = shuffle(getters.availableMembers).map((member) => ({
+      ...member,
+      totalTime: 0,
+      isCompleted: false,
+    }))
+    commit('setMembersInDaily', membersInDaily)
+    commit('setCurrentMember', membersInDaily[0])
+    commit('setDailyStarted', true)
+    commit('setDailyFinished', false)
+    commit('setTotalDailyTime', 0)
   },
 
-  nextMember({ commit }) {
+  nextMember({ commit, getters }) {
     commit('setCurrentMemberAsCompleted')
-    commit('selectNextMember')
+    commit('setCurrentMember', getters.nextMember)
   },
 
   finishDaily({ commit, state }) {
-    const totalDailyTime = state.availableMembers.reduce(
+    const totalDailyTime = state.membersInDaily.reduce(
       (dailyTotalTime, member) => dailyTotalTime + member.totalTime,
       0
     )

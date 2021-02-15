@@ -1,6 +1,6 @@
 <template>
   <div class="mt-4 list">
-    <Member v-for="member in members" :key="member.email" :member="member" />
+    <Member v-for="member in members" :key="member.id" :member="member" />
   </div>
 </template>
 

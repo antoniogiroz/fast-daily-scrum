@@ -8,7 +8,7 @@
 
     <section>
       <h2 class="title">Summary</h2>
-      <MemberList :members="availableMembers" />
+      <MemberList :members="membersInDaily" />
     </section>
   </div>
 </template>
@@ -25,7 +25,7 @@ export default {
   middleware: 'daily-finished',
 
   computed: {
-    ...mapState(['availableMembers', 'totalDailyTime']),
+    ...mapState(['membersInDaily', 'totalDailyTime']),
   },
 }
 </script>

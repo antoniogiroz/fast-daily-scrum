@@ -52,8 +52,8 @@ export default {
   },
 
   computed: {
-    ...mapState(['initialCounterSeconds']),
-    ...mapGetters(['currentMember', 'nextMember']),
+    ...mapState(['currentMember', 'initialCounterSeconds']),
+    ...mapGetters(['nextMember']),
 
     counterClasses() {
       if (this.totalTime < 0 || this.exceeded) {
@@ -123,9 +123,9 @@ export default {
       if (currentTotalTime === 0) {
         return
       }
+      this.pauseTimer()
       this.updateMemberTime()
       this.$store.dispatch('finishDaily')
-      this.resetTimer()
       this.$router.push({
         path: '/daily/summary',
       })

@@ -34,8 +34,8 @@ export default {
   middleware: 'daily-started',
 
   computed: {
-    ...mapState(['isDailyStarted']),
-    ...mapGetters(['previousMember', 'currentMember', 'nextMember']),
+    ...mapState(['currentMember', 'isDailyStarted']),
+    ...mapGetters(['previousMember', 'nextMember']),
   },
 }
 </script>
