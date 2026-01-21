@@ -9,7 +9,7 @@ export const state = () => ({
   currentMember: null,
   isDailyStarted: false,
   isDailyFinished: false,
-  initialCounterSeconds: 120,
+  initialCounterSeconds: process.env.INITIAL_COUNTER_SECONDS || 120,
   totalDailyTime: 0,
 })
 
